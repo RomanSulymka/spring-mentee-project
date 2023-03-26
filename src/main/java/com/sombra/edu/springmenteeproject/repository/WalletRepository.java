@@ -4,6 +4,8 @@ import com.sombra.edu.springmenteeproject.entity.UserAccount;
 import com.sombra.edu.springmenteeproject.entity.Wallet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -14,11 +16,11 @@ import java.util.stream.Collectors;
 import static com.sombra.edu.springmenteeproject.util.InitDataUtil.initializeWallets;
 
 @Repository
-public class WalletRepository {
+public class WalletRepository implements ApplicationListener<ContextRefreshedEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(WalletRepository.class);
-    private static List<Wallet> walletList = new ArrayList<>();
+    private static final List<Wallet> walletList = new ArrayList<>();
 
-    public static void initData() {
+    public void initData() {
         initializeWallets(4, walletList);
     }
 
@@ -60,5 +62,10 @@ public class WalletRepository {
             foundWallet.setUserAccount(wallet.getUserAccount());
         });
         return existingWallet;
+    }
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        initData();
     }
 }
