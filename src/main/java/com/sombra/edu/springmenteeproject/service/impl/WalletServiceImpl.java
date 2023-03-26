@@ -2,6 +2,7 @@ package com.sombra.edu.springmenteeproject.service.impl;
 
 import com.sombra.edu.springmenteeproject.entity.UserAccount;
 import com.sombra.edu.springmenteeproject.entity.Wallet;
+import com.sombra.edu.springmenteeproject.exception.NotFoundException;
 import com.sombra.edu.springmenteeproject.exception.NullEntityReferenceException;
 import com.sombra.edu.springmenteeproject.repository.WalletRepository;
 import com.sombra.edu.springmenteeproject.service.WalletService;
@@ -32,7 +33,7 @@ public class WalletServiceImpl implements WalletService {
             return repository.saveWallet(wallet);
         } else {
             LOGGER.warn("Element is already exist");
-            throw new RuntimeException();
+            throw new NotFoundException("Element is already exist");
         }
     }
 
@@ -42,7 +43,7 @@ public class WalletServiceImpl implements WalletService {
             return repository.updateWallet(wallet);
         } else {
             LOGGER.warn("Can't find the element");
-            throw new RuntimeException();
+            throw new NotFoundException("Can't find the element");
         }
     }
 
