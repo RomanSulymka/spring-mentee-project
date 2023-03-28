@@ -21,34 +21,34 @@ public class WalletController {
         this.service = service;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Optional<Wallet>> addWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
         Optional<Wallet> newWallet = service.createNewWallet(wallet);
         return new ResponseEntity<>(newWallet, HttpStatus.OK);
     }
 
-    @GetMapping("/get-all")
+    @GetMapping
     public ResponseEntity<List<Wallet>> getAllWallets() {
         List<Wallet> wallets = service.getAllWallets();
         return new ResponseEntity<>(wallets, HttpStatus.OK);
     }
 
-    @PutMapping("/edit")
-    public ResponseEntity<Optional<Wallet>> editWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
+    @PutMapping
+    public ResponseEntity<Optional<Wallet>> updateWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
         Optional<Wallet> updatedWallet = service.editWallet(wallet);
         return new ResponseEntity<>(updatedWallet, HttpStatus.OK);
     }
 
-    @GetMapping("/get-by-id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Wallet> findWalletById(@PathVariable Long id) throws NoSuchElementException {
         Wallet wallet = service.findWalletById(id);
         return new ResponseEntity<>(wallet, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-wallet/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteWallet(@PathVariable Long id) {
         service.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
