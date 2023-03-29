@@ -6,8 +6,7 @@ import com.sombra.edu.springmenteeproject.exception.NotFoundException;
 import com.sombra.edu.springmenteeproject.exception.NullEntityReferenceException;
 import com.sombra.edu.springmenteeproject.repository.WalletRepository;
 import com.sombra.edu.springmenteeproject.service.WalletService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +15,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class WalletServiceImpl implements WalletService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(WalletServiceImpl.class);
 
     private final WalletRepository repository;
 
@@ -32,7 +30,7 @@ public class WalletServiceImpl implements WalletService {
         if (repository.findWalletById(wallet.getId()).isEmpty()) {
             return repository.saveWallet(wallet);
         } else {
-            LOGGER.warn("Element is already exist");
+            log.warn("Element is already exist");
             throw new NotFoundException("Element is already exist");
         }
     }
@@ -42,7 +40,7 @@ public class WalletServiceImpl implements WalletService {
         if (repository.findWalletById(wallet.getId()).isPresent()) {
             return repository.updateWallet(wallet);
         } else {
-            LOGGER.warn("Can't find the element");
+            log.warn("Can't find the element");
             throw new NotFoundException("Can't find the element");
         }
     }
@@ -61,9 +59,9 @@ public class WalletServiceImpl implements WalletService {
     public void delete(Long walletId) {
         if (Objects.nonNull(findWalletById(walletId))) {
             repository.deleteWallet(walletId);
-            LOGGER.warn("Element deleted");
+            log.warn("Element deleted");
         } else {
-            LOGGER.warn("Element is not present");
+            log.warn("Element is not present");
             throw new NullEntityReferenceException();
         }
     }
