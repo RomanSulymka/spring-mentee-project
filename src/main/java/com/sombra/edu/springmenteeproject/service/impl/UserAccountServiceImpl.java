@@ -3,20 +3,16 @@ package com.sombra.edu.springmenteeproject.service.impl;
 import com.sombra.edu.springmenteeproject.entity.UserAccount;
 import com.sombra.edu.springmenteeproject.repository.UserAccountRepository;
 import com.sombra.edu.springmenteeproject.service.UserAccountService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class UserAccountServiceImpl implements UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
-
-    @Autowired
-    public UserAccountServiceImpl(UserAccountRepository userAccountRepository) {
-        this.userAccountRepository = userAccountRepository;
-    }
 
     @Override
     public boolean checkIsUserAccountExist(Long senderAccountId, Long receiverAccountId) {
@@ -24,7 +20,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public UserAccount findAccountById(Long userId) {
+    public UserAccount getAccountById(Long userId) {
         return userAccountRepository.findById(userId).orElseThrow();
     }
 }

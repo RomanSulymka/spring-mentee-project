@@ -3,6 +3,7 @@ package com.sombra.edu.springmenteeproject.controller;
 import com.sombra.edu.springmenteeproject.entity.Wallet;
 import com.sombra.edu.springmenteeproject.exception.NullEntityReferenceException;
 import com.sombra.edu.springmenteeproject.service.WalletService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +13,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/wallets")
 public class WalletController {
     private final WalletService service;
-    @Autowired
-    public WalletController(WalletService service) {
-        this.service = service;
-    }
 
     @PostMapping
     public ResponseEntity<Wallet> addWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
@@ -39,8 +37,8 @@ public class WalletController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Wallet> findWalletById(@PathVariable Long id) throws NoSuchElementException {
-        Wallet wallet = service.findWalletById(id);
+    public ResponseEntity<Wallet> getWalletById(@PathVariable Long id) throws NoSuchElementException {
+        Wallet wallet = service.getWalletById(id);
         return new ResponseEntity<>(wallet, HttpStatus.OK);
     }
 

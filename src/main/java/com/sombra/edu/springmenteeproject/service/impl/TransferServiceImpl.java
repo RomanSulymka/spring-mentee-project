@@ -7,13 +7,15 @@ import com.sombra.edu.springmenteeproject.entity.TransferRequest;
 import com.sombra.edu.springmenteeproject.repository.TransferRepository;
 import com.sombra.edu.springmenteeproject.service.*;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class TransferServiceImpl implements TransferService {
 
@@ -23,21 +25,13 @@ public class TransferServiceImpl implements TransferService {
     private final BalanceService balanceService;
     private final TransferRequestService transferRequestService;
 
-    @Autowired
-    public TransferServiceImpl(TransferRepository transferRepository, UserAccountService userAccountService, WalletService walletService, BalanceService balanceService, TransferRequestService transferRequestService) {
-        this.transferRepository = transferRepository;
-        this.userAccountService = userAccountService;
-        this.walletService = walletService;
-        this.balanceService = balanceService;
-        this.transferRequestService = transferRequestService;
-    }
-
     @Transactional
     @Override
     public Transfer sendMoneyToAnotherUser(MoneyTransferDTO transferDTO) {
         TransferRequest transferRequest = getTransferRequest(transferDTO);
         if (!isValidTransfer(transferDTO)) {
-            return getTransfer(transferRequest, Status.FAILED);
+            getTransfer(transferRequest, Status.FAILED);
+            throw new IllegalArgumentException("Invalid transfer request");
         }
         balanceService.subtractMoneyByCurrencyAndWalletId(transferDTO.getQuantity(), transferDTO.getSenderWalletId());
         balanceService.increaseMoneyByCurrencyAndWalletId(transferDTO.getQuantity(), transferDTO.getReceiverWalletId());
@@ -56,8 +50,8 @@ public class TransferServiceImpl implements TransferService {
         if (!balanceService.isSameCurrencyInWallets(transferDTO.getSenderWalletId(), transferDTO.getReceiverWalletId())) {
             return false;
         }
-        double senderBalance = balanceService.findBalanceByUserAccountIdAndWalletId(transferDTO.getSenderAccountId(), transferDTO.getSenderWalletId());
-        if (senderBalance < transferDTO.getQuantity()) {
+        BigDecimal senderBalance = balanceService.getUserBalance(transferDTO.getSenderAccountId(), transferDTO.getSenderWalletId());
+        if (senderBalance.compareTo(transferDTO.getQuantity()) < 0) {
             log.error("The user does not have enough money in the account");
             return false;
         }
@@ -79,8 +73,8 @@ public class TransferServiceImpl implements TransferService {
 
     private TransferRequest getTransferRequest(MoneyTransferDTO transferDTO) {
         return TransferRequest.builder()
-                .senderAccount(userAccountService.findAccountById(transferDTO.getSenderAccountId()))
-                .receiverAccount(userAccountService.findAccountById(transferDTO.getReceiverAccountId()))
+                .senderAccount(userAccountService.getAccountById(transferDTO.getSenderAccountId()))
+                .receiverAccount(userAccountService.getAccountById(transferDTO.getReceiverAccountId()))
                 .amount(transferDTO.getQuantity())
                 .senderWalletId(transferDTO.getSenderWalletId())
                 .receiverWalletId(transferDTO.getReceiverWalletId())

@@ -3,8 +3,7 @@ package com.sombra.edu.springmenteeproject.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Objects;
-import java.util.Set;
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -31,7 +30,7 @@ public class TransferRequest {
     private Long receiverWalletId;
     
     @Column(name = "amount", nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 
     @OneToOne(mappedBy = "transferRequest")
     private Transfer transfer;

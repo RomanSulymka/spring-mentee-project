@@ -3,20 +3,16 @@ package com.sombra.edu.springmenteeproject.service.impl;
 import com.sombra.edu.springmenteeproject.entity.TransferRequest;
 import com.sombra.edu.springmenteeproject.repository.TransferRequestRepository;
 import com.sombra.edu.springmenteeproject.service.TransferRequestService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class TransferRequestServiceImpl implements TransferRequestService {
 
     private final TransferRequestRepository transferRequestRepository;
-
-    @Autowired
-    public TransferRequestServiceImpl(TransferRequestRepository transferRequestRepository) {
-        this.transferRequestRepository = transferRequestRepository;
-    }
 
     @Override
     public void saveTransferRequest(TransferRequest transferRequest) {
