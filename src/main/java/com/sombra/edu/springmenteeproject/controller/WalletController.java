@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/wallets")
@@ -22,8 +21,8 @@ public class WalletController {
     }
 
     @PostMapping
-    public ResponseEntity<Optional<Wallet>> addWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
-        Optional<Wallet> newWallet = service.createNewWallet(wallet);
+    public ResponseEntity<Wallet> addWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
+        Wallet newWallet = service.createNewWallet(wallet);
         return new ResponseEntity<>(newWallet, HttpStatus.OK);
     }
 
@@ -34,8 +33,8 @@ public class WalletController {
     }
 
     @PutMapping
-    public ResponseEntity<Optional<Wallet>> updateWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
-        Optional<Wallet> updatedWallet = service.editWallet(wallet);
+    public ResponseEntity<Wallet> updateWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
+        Wallet updatedWallet = service.editWallet(wallet);
         return new ResponseEntity<>(updatedWallet, HttpStatus.OK);
     }
 
