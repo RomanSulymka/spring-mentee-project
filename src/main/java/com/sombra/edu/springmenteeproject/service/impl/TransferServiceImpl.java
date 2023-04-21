@@ -4,8 +4,15 @@ import com.sombra.edu.springmenteeproject.dto.MoneyTransferDTO;
 import com.sombra.edu.springmenteeproject.entity.Status;
 import com.sombra.edu.springmenteeproject.entity.Transfer;
 import com.sombra.edu.springmenteeproject.entity.TransferRequest;
+import com.sombra.edu.springmenteeproject.exception.CurrencyMismatchException;
+import com.sombra.edu.springmenteeproject.exception.LowBalanceException;
+import com.sombra.edu.springmenteeproject.exception.NotFoundException;
 import com.sombra.edu.springmenteeproject.repository.TransferRepository;
-import com.sombra.edu.springmenteeproject.service.*;
+import com.sombra.edu.springmenteeproject.service.BalanceService;
+import com.sombra.edu.springmenteeproject.service.TransferRequestService;
+import com.sombra.edu.springmenteeproject.service.TransferService;
+import com.sombra.edu.springmenteeproject.service.UserAccountService;
+import com.sombra.edu.springmenteeproject.service.WalletService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,35 +37,32 @@ public class TransferServiceImpl implements TransferService {
     public Transfer sendMoneyToAnotherUser(MoneyTransferDTO transferDTO) {
         TransferRequest transferRequest = getTransferRequest(transferDTO);
         if (!isValidTransfer(transferDTO)) {
-            getTransfer(transferRequest, Status.FAILED);
+            processTransferRequest(transferRequest, Status.FAILED);
             throw new IllegalArgumentException("Invalid transfer request");
         }
         balanceService.subtractMoneyByCurrencyAndWalletId(transferDTO.getQuantity(), transferDTO.getSenderWalletId());
         balanceService.increaseMoneyByCurrencyAndWalletId(transferDTO.getQuantity(), transferDTO.getReceiverWalletId());
-        return getTransfer(transferRequest, Status.SUCCESS);
+        return processTransferRequest(transferRequest, Status.SUCCESS);
     }
 
     private boolean isValidTransfer(MoneyTransferDTO transferDTO) {
         if (!userAccountService.checkIsUserAccountExist(transferDTO.getSenderAccountId(), transferDTO.getReceiverAccountId())) {
-            log.error("Account is not exist");
-            return false;
+            throw new NotFoundException("Account is not exist");
         }
         if (!walletService.checkIsWalletsExist(transferDTO.getSenderWalletId(), transferDTO.getReceiverWalletId())) {
-            log.error("Wallet is not exist");
-            return false;
+            throw new NotFoundException("Wallet is not exist");
         }
         if (!balanceService.isSameCurrencyInWallets(transferDTO.getSenderWalletId(), transferDTO.getReceiverWalletId())) {
-            return false;
+            throw new CurrencyMismatchException("Currency in wallets is not the same");
         }
         BigDecimal senderBalance = balanceService.getUserBalance(transferDTO.getSenderAccountId(), transferDTO.getSenderWalletId());
         if (senderBalance.compareTo(transferDTO.getQuantity()) < 0) {
-            log.error("The user does not have enough money in the account");
-            return false;
+            throw new LowBalanceException("The user does not have enough money in the account");
         }
         return true;
     }
 
-    private Transfer getTransfer(TransferRequest transferRequest, Status status) {
+    private Transfer processTransferRequest(TransferRequest transferRequest, Status status) {
         Transfer transfer = Transfer.builder()
                 .status(status)
                 .transactionDate(LocalDateTime.now())
