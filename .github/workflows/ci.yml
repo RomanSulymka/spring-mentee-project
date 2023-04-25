@@ -10,6 +10,10 @@ jobs:
     name: Lint code base
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - name: Build and test
+        run: ./mvnw clean package
+        
       - name: Checkout code
         uses: actions/checkout@v2
         
