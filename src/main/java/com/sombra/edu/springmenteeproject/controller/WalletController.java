@@ -3,6 +3,7 @@ package com.sombra.edu.springmenteeproject.controller;
 import com.sombra.edu.springmenteeproject.entity.Wallet;
 import com.sombra.edu.springmenteeproject.exception.NullEntityReferenceException;
 import com.sombra.edu.springmenteeproject.service.WalletService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,20 +11,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/wallets")
 public class WalletController {
     private final WalletService service;
-    @Autowired
-    public WalletController(WalletService service) {
-        this.service = service;
-    }
 
     @PostMapping
-    public ResponseEntity<Optional<Wallet>> addWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
-        Optional<Wallet> newWallet = service.createNewWallet(wallet);
+    public ResponseEntity<Wallet> addWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
+        Wallet newWallet = service.createNewWallet(wallet);
         return new ResponseEntity<>(newWallet, HttpStatus.OK);
     }
 
@@ -34,14 +31,14 @@ public class WalletController {
     }
 
     @PutMapping
-    public ResponseEntity<Optional<Wallet>> updateWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
-        Optional<Wallet> updatedWallet = service.editWallet(wallet);
+    public ResponseEntity<Wallet> updateWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
+        Wallet updatedWallet = service.editWallet(wallet);
         return new ResponseEntity<>(updatedWallet, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Wallet> findWalletById(@PathVariable Long id) throws NoSuchElementException {
-        Wallet wallet = service.findWalletById(id);
+    public ResponseEntity<Wallet> getWalletById(@PathVariable Long id) throws NoSuchElementException {
+        Wallet wallet = service.getWalletById(id);
         return new ResponseEntity<>(wallet, HttpStatus.OK);
     }
 
