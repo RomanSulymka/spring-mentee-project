@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.NoSuchElementException;
 public class WalletController {
     private final WalletService service;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Wallet> addWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
         Wallet newWallet = service.createNewWallet(wallet);
@@ -30,6 +32,7 @@ public class WalletController {
         return new ResponseEntity<>(wallets, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<Wallet> updateWallet(@RequestBody Wallet wallet) throws NullEntityReferenceException {
         Wallet updatedWallet = service.editWallet(wallet);
@@ -42,6 +45,7 @@ public class WalletController {
         return new ResponseEntity<>(wallet, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteWallet(@PathVariable Long id) {
         service.delete(id);
