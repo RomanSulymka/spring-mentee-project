@@ -10,6 +10,25 @@ jobs:
   super-lint:
     name: Lint code base
     runs-on: ubuntu-latest
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:13.3
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: mysecretpassword
+          POSTGRES_USER: postgres
+          POSTGRES_DB: mywallet
+          ##add hostname {postgres}
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -18,8 +37,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+          cache: 'maven'
       - name: Build with Maven
-        run: mvn clean install
+        run: ./mvnw clean install
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
 
       - name: List files in target directory
         run: ls target
