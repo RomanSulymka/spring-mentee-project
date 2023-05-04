@@ -55,7 +55,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build image
-        run: -Dspring-boot.build-image.imageName=romansulymka/latest:tagname
+        run: mvn spring-boot:build-image -Dspring-boot.build-image.imageName=romansulymka/latest:tagname
 
       - name: Build and push
         uses: docker/build-push-action@v4
