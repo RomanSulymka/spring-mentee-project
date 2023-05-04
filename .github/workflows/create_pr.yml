@@ -57,9 +57,6 @@ jobs:
       - name: Build image
         run: mvn spring-boot:build-image -Dspring-boot.build-image.imageName=romansulymka/latest:tagname
 
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          push: true
-          tags: romansulymka/latest:tagname
+      - name: Push
+        run: docker push romansulymka/latest:tagname
 
