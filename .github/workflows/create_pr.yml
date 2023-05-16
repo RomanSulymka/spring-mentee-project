@@ -57,8 +57,9 @@ jobs:
       - name: Build image
         run: mvn spring-boot:build-image -Dspring-boot.build-image.imageName=romansulymka/latest:tagname
 
-      - name: Build and Push Docker image
-        run: |
-            docker build -t romansulymka/latest:tagname .
+      - name: Push Docker image
+        run:
             docker push romansulymka/latest:tagname
 
+      - name: Deploy Docker image
+        run: docker run -p 8080:8080 romansulymka/latest:tagname
