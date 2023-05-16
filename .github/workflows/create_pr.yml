@@ -60,9 +60,6 @@ jobs:
       - name: Push Docker image
         run: docker push romansulymka/latest:tagname
 
-      - name: Wait for PostgreSQL
-        run: docker run --rm --net=host postgres:13.3 bash -c 'while ! pg_isready; do sleep 1; done;'
-
       - name: Deploy Docker image
         run: docker run -p 8080:8080 -e POSTGRES_HOST=postgres -e POSTGRES_PORT=5432 romansulymka/latest:tagname
 
