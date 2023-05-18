@@ -41,7 +41,7 @@ jobs:
       - name: Build with Maven
         run: ./mvnw clean install
         env:
-          POSTGRES_HOST: postgres
+          POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
           JWT_SECRET_KEY: 7134743777397A24432646294A404E635266556A586E3272357538782F412544
 
