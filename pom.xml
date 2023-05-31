@@ -130,6 +130,12 @@
             <version>6.1.7.Final</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -152,9 +158,13 @@
                 <configuration>
                     <user>romansulymka</user>
                     <password>admin</password>
+                    <url>jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/mywallet</url>
                     <schemas>
                         <schema>public</schema>
                     </schemas>
+                    <locations>
+                        <location>filesystem:src/main/resources/db/migration</location>
+                    </locations>
                 </configuration>
             </plugin>
             <plugin>
