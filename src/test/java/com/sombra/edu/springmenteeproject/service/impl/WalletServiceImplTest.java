@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -131,5 +133,60 @@ class WalletServiceImplTest {
         assertThrows(Exception.class, () -> walletService.getWalletById(wallet.getId()));
 
         verify(walletRepository, times(1)).findById(wallet.getId());
+    }
+
+    @Test
+    void testGetAllWallets_shouldReturnAllWallets() {
+        List<Wallet> wallets = new ArrayList<>();
+        Wallet wallet1 = Wallet.builder()
+                .id(1L)
+                .walletName("Wallet 1")
+                .balance(new Balance())
+                .build();
+        Wallet wallet2 = Wallet.builder()
+                .id(2L)
+                .walletName("Wallet 2")
+                .balance(new Balance())
+                .build();
+        wallets.add(wallet1);
+        wallets.add(wallet2);
+
+        when(walletRepository.findAll()).thenReturn(wallets);
+
+        List<Wallet> retrievedWallets = walletService.getAllWallets();
+
+        assertNotNull(retrievedWallets);
+        assertEquals(wallets.size(), retrievedWallets.size());
+        assertEquals(wallets, retrievedWallets);
+
+        verify(walletRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testDeleteShouldDeleteWalletWhenWalletExists() {
+        Wallet wallet = Wallet.builder()
+                .id(1L)
+                .walletName("Test Wallet")
+                .balance(new Balance())
+                .build();
+
+        when(walletRepository.findById(wallet.getId())).thenReturn(Optional.of(wallet));
+
+        walletService.delete(wallet.getId());
+
+        verify(walletRepository, times(1)).findById(wallet.getId());
+        verify(walletRepository, times(1)).delete(wallet);
+    }
+
+    @Test
+    void testDeleteShouldThrowExceptionWhenWalletDoesNotExist() {
+        Long walletId = 1L;
+
+        when(walletRepository.findById(walletId)).thenReturn(Optional.empty());
+
+        assertThrows(Exception.class, () -> walletService.delete(walletId));
+
+        verify(walletRepository, times(1)).findById(walletId);
+        verify(walletRepository, never()).delete(any(Wallet.class));
     }
 }
