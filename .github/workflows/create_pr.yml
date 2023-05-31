@@ -41,9 +41,9 @@ jobs:
       - name: Build with Maven
         run: ./mvnw clean install
         env:
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          JWT_SECRET_KEY: 7134743777397A24432646294A404E635266556A586E3272357538782F412544
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
 
       - name: List files in target directory
         run: ls target
