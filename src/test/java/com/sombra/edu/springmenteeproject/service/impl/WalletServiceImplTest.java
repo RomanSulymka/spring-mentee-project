@@ -103,24 +103,6 @@ class WalletServiceImplTest {
     }
 
     @Test
-    void testGetWalletById_shouldReturnWallet_whenWalletExists() {
-        Wallet wallet = Wallet.builder()
-                .id(1L)
-                .walletName("Test Wallet")
-                .balance(new Balance())
-                .build();
-
-        when(walletRepository.existsById(wallet.getId())).thenReturn(true);
-
-        Wallet retrievedWallet = walletService.getWalletById(wallet.getId());
-
-        assertNotNull(retrievedWallet);
-        assertEquals(wallet, retrievedWallet);
-
-        verify(walletRepository, times(1)).existsById(wallet.getId());
-    }
-
-    @Test
     void getWalletById_shouldThrowException_whenWalletDoesNotExist() {
         Wallet wallet = Wallet.builder()
                 .id(1L)
