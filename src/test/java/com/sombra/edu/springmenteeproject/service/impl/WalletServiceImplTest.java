@@ -8,14 +8,19 @@ import com.sombra.edu.springmenteeproject.repository.WalletRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 class WalletServiceImplTest {
 
@@ -38,16 +43,16 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        when(walletRepository.existsById(wallet.getId())).thenReturn(false);
-        when(walletRepository.save(wallet)).thenReturn(wallet);
+        Mockito.when(walletRepository.existsById(wallet.getId())).thenReturn(false);
+        Mockito.when(walletRepository.save(wallet)).thenReturn(wallet);
 
         Wallet savedWallet = walletService.createNewWallet(wallet);
 
         assertNotNull(savedWallet);
         assertEquals(wallet, savedWallet);
 
-        verify(walletRepository, times(1)).existsById(wallet.getId());
-        verify(walletRepository, times(1)).save(wallet);
+        Mockito.verify(walletRepository, times(1)).existsById(wallet.getId());
+        Mockito.verify(walletRepository, times(1)).save(wallet);
     }
 
     @Test
@@ -58,12 +63,12 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        when(walletRepository.existsById(wallet.getId())).thenReturn(true);
+        Mockito.when(walletRepository.existsById(wallet.getId())).thenReturn(true);
 
         assertThrows(ConflictException.class, () -> walletService.createNewWallet(wallet));
 
-        verify(walletRepository, times(1)).existsById(wallet.getId());
-        verify(walletRepository, never()).save(wallet);
+        Mockito.verify(walletRepository, times(1)).existsById(wallet.getId());
+        Mockito.verify(walletRepository, never()).save(wallet);
     }
 
     @Test
@@ -74,16 +79,16 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        when(walletRepository.existsById(wallet.getId())).thenReturn(true);
-        when(walletRepository.save(wallet)).thenReturn(wallet);
+        Mockito.when(walletRepository.existsById(wallet.getId())).thenReturn(true);
+        Mockito.when(walletRepository.save(wallet)).thenReturn(wallet);
 
         Wallet editedWallet = walletService.editWallet(wallet);
 
         assertNotNull(editedWallet);
         assertEquals(wallet, editedWallet);
 
-        verify(walletRepository, times(1)).existsById(wallet.getId());
-        verify(walletRepository, times(1)).save(wallet);
+        Mockito.verify(walletRepository, times(1)).existsById(wallet.getId());
+        Mockito.verify(walletRepository, times(1)).save(wallet);
     }
 
     @Test
@@ -94,12 +99,12 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        when(walletRepository.existsById(wallet.getId())).thenReturn(false);
+        Mockito.when(walletRepository.existsById(wallet.getId())).thenReturn(false);
 
         assertThrows(NotFoundException.class, () -> walletService.editWallet(wallet));
 
-        verify(walletRepository, times(1)).existsById(wallet.getId());
-        verify(walletRepository, never()).save(wallet);
+        Mockito.verify(walletRepository, times(1)).existsById(wallet.getId());
+        Mockito.verify(walletRepository, never()).save(wallet);
     }
 
     @Test
@@ -110,11 +115,11 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        when(walletRepository.findById(wallet.getId())).thenReturn(Optional.empty());
+        Mockito.when(walletRepository.findById(wallet.getId())).thenReturn(Optional.empty());
 
         assertThrows(Exception.class, () -> walletService.getWalletById(wallet.getId()));
 
-        verify(walletRepository, times(1)).findById(wallet.getId());
+        Mockito.verify(walletRepository, times(1)).findById(wallet.getId());
     }
 
     @Test
@@ -133,7 +138,7 @@ class WalletServiceImplTest {
         wallets.add(wallet1);
         wallets.add(wallet2);
 
-        when(walletRepository.findAll()).thenReturn(wallets);
+        Mockito.when(walletRepository.findAll()).thenReturn(wallets);
 
         List<Wallet> retrievedWallets = walletService.getAllWallets();
 
@@ -141,7 +146,7 @@ class WalletServiceImplTest {
         assertEquals(wallets.size(), retrievedWallets.size());
         assertEquals(wallets, retrievedWallets);
 
-        verify(walletRepository, times(1)).findAll();
+        Mockito.verify(walletRepository, times(1)).findAll();
     }
 
     @Test
@@ -152,23 +157,23 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        when(walletRepository.findById(wallet.getId())).thenReturn(Optional.of(wallet));
+        Mockito.when(walletRepository.findById(wallet.getId())).thenReturn(Optional.of(wallet));
 
         walletService.delete(wallet.getId());
 
-        verify(walletRepository, times(1)).findById(wallet.getId());
-        verify(walletRepository, times(1)).delete(wallet);
+        Mockito.verify(walletRepository, times(1)).findById(wallet.getId());
+        Mockito.verify(walletRepository, times(1)).delete(wallet);
     }
 
     @Test
     void testDeleteShouldThrowExceptionWhenWalletDoesNotExist() {
         Long walletId = 1L;
 
-        when(walletRepository.findById(walletId)).thenReturn(Optional.empty());
+        Mockito.when(walletRepository.findById(walletId)).thenReturn(Optional.empty());
 
         assertThrows(Exception.class, () -> walletService.delete(walletId));
 
-        verify(walletRepository, times(1)).findById(walletId);
-        verify(walletRepository, never()).delete(any(Wallet.class));
+        Mockito.verify(walletRepository, times(1)).findById(walletId);
+        Mockito.verify(walletRepository, never()).delete(any(Wallet.class));
     }
 }
