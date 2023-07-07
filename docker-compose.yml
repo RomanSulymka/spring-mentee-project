@@ -1,0 +1,26 @@
+version: '3.3'
+services:
+  postgres:
+    image: postgres:14
+    restart: always
+    environment:
+      - POSTGRES_USER=romansulymka
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=mywallet
+    ports:
+      - '5432:5432'
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  app:
+    build:
+      context: .
+    image: romansulymka/latest:tagname
+    restart: always
+    environment:
+      - POSTGRES_HOST=postgres
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres

@@ -60,6 +60,4 @@ jobs:
       - name: Push Docker image
         run: docker push romansulymka/latest:tagname
 
-      - name: Deploy Docker image
-        run: docker run -p 8080:8080 -e POSTGRES_HOST=postgres -e POSTGRES_PORT=5432 romansulymka/latest:tagname
 
