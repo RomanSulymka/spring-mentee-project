@@ -5,8 +5,12 @@ import com.sombra.edu.springmenteeproject.entity.Wallet;
 import com.sombra.edu.springmenteeproject.exception.ConflictException;
 import com.sombra.edu.springmenteeproject.exception.NotFoundException;
 import com.sombra.edu.springmenteeproject.repository.WalletRepository;
+import com.sombra.edu.springmenteeproject.service.WalletService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -20,20 +24,45 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 
 class WalletServiceImplTest {
 
-    private WalletServiceImpl walletService;
+    private WalletService walletService;
 
     @Mock
     private WalletRepository walletRepository;
+
+    public static Object[][] testData() {
+        return new Object[][]{
+                {1L, "USD", new Balance()},
+                {2L, "EUR", new Balance()},
+                {3L, "PLZ", new Balance()}
+        };
+    }
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         walletService = new WalletServiceImpl(walletRepository);
     }
+
+    @ParameterizedTest
+    @MethodSource("testData")
+    void testGetWalletById(Long id, String walletName, Balance balance) {
+        when(walletRepository.findById(id)).thenReturn(Optional.ofNullable(Wallet.builder()
+                .id(id)
+                .walletName(walletName)
+                .balance(new Balance())
+                .build()));
+
+        Wallet testWallet = new Wallet(id, walletName, balance);
+        Wallet result = walletService.getWalletById(id);
+        Assertions.assertEquals(testWallet, result);
+
+    }
+
 
     @Test
     void testCreateNewWalletShouldSaveWalletWhenWalletDoesNotExist() {
@@ -43,8 +72,8 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        Mockito.when(walletRepository.existsById(wallet.getId())).thenReturn(false);
-        Mockito.when(walletRepository.save(wallet)).thenReturn(wallet);
+        when(walletRepository.existsById(wallet.getId())).thenReturn(false);
+        when(walletRepository.save(wallet)).thenReturn(wallet);
 
         Wallet savedWallet = walletService.createNewWallet(wallet);
 
@@ -63,7 +92,7 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        Mockito.when(walletRepository.existsById(wallet.getId())).thenReturn(true);
+        when(walletRepository.existsById(wallet.getId())).thenReturn(true);
 
         assertThrows(ConflictException.class, () -> walletService.createNewWallet(wallet));
 
@@ -79,8 +108,8 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        Mockito.when(walletRepository.existsById(wallet.getId())).thenReturn(true);
-        Mockito.when(walletRepository.save(wallet)).thenReturn(wallet);
+        when(walletRepository.existsById(wallet.getId())).thenReturn(true);
+        when(walletRepository.save(wallet)).thenReturn(wallet);
 
         Wallet editedWallet = walletService.editWallet(wallet);
 
@@ -99,7 +128,7 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        Mockito.when(walletRepository.existsById(wallet.getId())).thenReturn(false);
+        when(walletRepository.existsById(wallet.getId())).thenReturn(false);
 
         assertThrows(NotFoundException.class, () -> walletService.editWallet(wallet));
 
@@ -115,7 +144,7 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        Mockito.when(walletRepository.findById(wallet.getId())).thenReturn(Optional.empty());
+        when(walletRepository.findById(wallet.getId())).thenReturn(Optional.empty());
 
         assertThrows(Exception.class, () -> walletService.getWalletById(wallet.getId()));
 
@@ -138,7 +167,7 @@ class WalletServiceImplTest {
         wallets.add(wallet1);
         wallets.add(wallet2);
 
-        Mockito.when(walletRepository.findAll()).thenReturn(wallets);
+        when(walletRepository.findAll()).thenReturn(wallets);
 
         List<Wallet> retrievedWallets = walletService.getAllWallets();
 
@@ -157,7 +186,7 @@ class WalletServiceImplTest {
                 .balance(new Balance())
                 .build();
 
-        Mockito.when(walletRepository.findById(wallet.getId())).thenReturn(Optional.of(wallet));
+        when(walletRepository.findById(wallet.getId())).thenReturn(Optional.of(wallet));
 
         walletService.delete(wallet.getId());
 
@@ -169,7 +198,7 @@ class WalletServiceImplTest {
     void testDeleteShouldThrowExceptionWhenWalletDoesNotExist() {
         Long walletId = 1L;
 
-        Mockito.when(walletRepository.findById(walletId)).thenReturn(Optional.empty());
+        when(walletRepository.findById(walletId)).thenReturn(Optional.empty());
 
         assertThrows(Exception.class, () -> walletService.delete(walletId));
 
