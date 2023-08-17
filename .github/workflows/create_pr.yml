@@ -48,6 +48,12 @@ jobs:
       - name: List files in target directory
         run: ls target
 
+      - name: Upload Test Coverage Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: target/site/jacoco/index.html
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
