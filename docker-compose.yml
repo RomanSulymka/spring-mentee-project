@@ -4,15 +4,49 @@ services:
     image: postgres:14
     restart: always
     environment:
+      - POSTGRES_MULTIPLE_DATABASES=mywallet,analytics
       - POSTGRES_USER=romansulymka
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=mywallet
     ports:
       - '5432:5432'
     healthcheck:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    restart: unless-stopped
+
+  kafka:
+    build: .
+    image: bitnami/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_AUTO_OFFSET_RESET: earliest
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    restart: unless-stopped
+
+  quick-analytics:
+    build:
+      context: .
+    image: romansulymka/quick-analytics
+    restart: always
+    environment:
+      - POSTGRES_HOST=postgres
+    ports:
+      - '6060:6060'
+    depends_on:
+      - postgres
+
   app:
     build:
       context: .
