@@ -17,7 +17,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/kafka")
+@RequestMapping("/api/v1/kafka")
 public class KafkaController {
 
     private final TopicProducer topicProducer;
