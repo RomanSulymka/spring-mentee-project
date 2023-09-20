@@ -32,7 +32,7 @@ public class KafkaTopicConfiguration {
     @Bean
     public NewTopic topicMoney() {
         return TopicBuilder.name(topicMoney)
-                .partitions(1)
+                .partitions(3)
                 .replicas(1)
                 .build();
     }
@@ -40,7 +40,7 @@ public class KafkaTopicConfiguration {
     @Bean
     public NewTopic topicWallet() {
         return TopicBuilder.name(topicWallet)
-                .partitions(1)
+                .partitions(3)
                 .replicas(1)
                 .build();
     }
