@@ -71,7 +71,8 @@ VALUES ('US Dollar', 'USD'),
 INSERT INTO user_accounts (first_name, last_name, email, password)
 VALUES ('John', 'Doe', 'johndoe@example.com', 'password123'),
        ('William', 'Brown', 'williambrown@example.com', 'password789'),
-       ('Bob', 'Johnson', 'bobjohnson@example.com', 'password789');
+       ('Bob', 'Johnson', 'bobjohnson@example.com', 'password789'),
+       ('roman', 'sulymka', 'roman@mail.com', '$2a$10$ek9m13baSIMPPtAaqNEaie3MWmP5UNuvsO/b2GuuN4jVH66zAF2bu');
 
 INSERT INTO balances (balance, user_account_id, money_id)
 VALUES (1000.00, 1, 1),
